@@ -366,6 +366,33 @@
         let filteredArticles = [];
         let currentCategory = 'All';
         let currentDateFilter = 'All Time';
+        let currentSortOrder = 'newest';
+
+        // --- Utility Functions ---
+        function formatDateWithTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffHours < 1) {
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                return `${diffMinutes}m ago`;
+            } else if (diffHours < 24) {
+                return `${diffHours}h ago`;
+            } else if (diffDays < 7) {
+                return `${diffDays}d ago`;
+            } else {
+                return date.toLocaleDateString(undefined, { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
+        }
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -398,6 +425,12 @@
                 
                 if (data.success) {
                     articles = data.articles;
+                    // Sort articles by newest first by default
+                    articles.sort((a, b) => {
+                        const dateA = new Date(a.publishedAt || a.published_date || a.timestamp || a.date);
+                        const dateB = new Date(b.publishedAt || b.published_date || b.timestamp || b.date);
+                        return dateB - dateA;
+                    });
                     filteredArticles = [...articles];
                     displayArticles();
                 } else {
@@ -421,7 +454,7 @@
             const articlesHTML = filteredArticles.map(article => `
                 <div class="article">
                     <div class="article-title">${article.title || 'Untitled Article'}</div>
-                    <div class="article-meta">Source: ${article.source || 'Unknown'} • ${new Date(article.publishedAt || article.published_date || article.timestamp || article.date).toLocaleDateString()}</div>
+                    <div class="article-meta">Source: ${article.source || 'Unknown'} • ${formatDateWithTime(article.publishedAt || article.published_date || article.timestamp || article.date)}</div>
                     <div class="article-summary">${article.content || article.summary || 'No content available'}</div>
                 </div>
             `).join('');

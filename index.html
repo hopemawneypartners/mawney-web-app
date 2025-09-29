@@ -530,6 +530,32 @@
         // User data
         let currentUser = null;
         let articles = [];
+
+        // --- Utility Functions ---
+        function formatDateWithTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffHours < 1) {
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                return `${diffMinutes}m ago`;
+            } else if (diffHours < 24) {
+                return `${diffHours}h ago`;
+            } else if (diffDays < 7) {
+                return `${diffDays}d ago`;
+            } else {
+                return date.toLocaleDateString(undefined, { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
+        }
         
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -647,9 +673,15 @@
                 const response = await fetch(`${API_BASE_URL}/api/articles`);
                 const data = await response.json();
                 
-                if (data.success) {
-                    articles = data.articles;
-                    displayArticles();
+                        if (data.success) {
+                            articles = data.articles;
+                            // Sort articles by newest first
+                            articles.sort((a, b) => {
+                                const dateA = new Date(a.publishedAt || a.published_date || a.timestamp || a.date);
+                                const dateB = new Date(b.publishedAt || b.published_date || b.timestamp || b.date);
+                                return dateB - dateA;
+                            });
+                            displayArticles();
                 } else {
                     document.getElementById('articlesList').innerHTML = '<div class="error">Failed to load articles</div>';
                 }
@@ -671,7 +703,7 @@
             const articlesHTML = articles.slice(0, 10).map(article => `
                 <div class="article">
                     <div class="article-title">${article.title || 'Untitled Article'}</div>
-                    <div class="article-meta">Source: ${article.source || 'Unknown'} • ${new Date(article.publishedAt || article.published_date || article.timestamp || article.date).toLocaleDateString()}</div>
+                            <div class="article-meta">Source: ${article.source || 'Unknown'} • ${formatDateWithTime(article.publishedAt || article.published_date || article.timestamp || article.date)}</div>
                     <div class="article-summary">${article.content || article.summary || 'No content available'}</div>
                 </div>
             `).join('');
