@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mawney Partners</title>
+    <meta name="description" content="Mawney Partners Company App">
+    <meta name="theme-color" content="#004b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Mawney Partners">
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Mawney Partners&quot;,&quot;short_name&quot;:&quot;Mawney&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#004b35&quot;,&quot;theme_color&quot;:&quot;#004b35&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwMDRiMzUiLz4KPHRleHQgeD0iOTYiIHk9IjExMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1QPC90ZXh0Pgo8L3N2Zz4K&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #004b35 0%, #006b4a 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .app-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #004b35 0%, #006b4a 100%);
+            color: white;
+            padding: 60px 20px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 120px;
+            z-index: 99;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: #004b35;
+            border-bottom-color: #004b35;
+            background: #f8fffe;
+        }
+
+        .nav-tab:hover {
+            background: #f0f8f5;
+        }
+
+        .content {
+            padding: 20px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .card h3 {
+            color: #004b35;
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #004b35 0%, #006b4a 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,75,53,0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #004b35;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin: 10px 0;
+            transition: border-color 0.3s ease;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #004b35;
+            box-shadow: 0 0 0 3px rgba(0,75,53,0.1);
+        }
+
+        .article-item {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 15px 0;
+        }
+
+        .article-item:last-child {
+            border-bottom: none;
+        }
+
+        .article-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .article-meta {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .article-summary {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .call-note {
+            background: #f8fffe;
+            border-left: 4px solid #004b35;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .call-note h4 {
+            color: #004b35;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .call-note p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .ai-response {
+            background: #f0f8f5;
+            border: 1px solid #d4edda;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .ai-response h4 {
+            color: #004b35;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .ai-response p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #004b35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #004b35 0%, #006b4a 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 50px 15px 15px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .nav-tab {
+                padding: 12px 8px;
+                font-size: 11px;
+            }
+        }
+
+        .install-prompt {
+            background: linear-gradient(135deg, #004b35 0%, #006b4a 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: none;
+        }
+
+        .install-prompt.show {
+            display: block;
+        }
+
+        .install-btn {
+            background: white;
+            color: #004b35;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>Mawney Partners</h1>
+            <p>Company App</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showScreen('home')">◊ Home</button>
+            <button class="nav-tab" onclick="showScreen('articles')">■ Articles</button>
+            <button class="nav-tab" onclick="showScreen('todos')">□ Todos</button>
+            <button class="nav-tab" onclick="showScreen('calls')">● Calls</button>
+            <button class="nav-tab" onclick="showScreen('profile')">◆ Profile</button>
+        </div>
+
+        <div class="content">
+            <!-- Home Screen -->
+            <div id="home" class="screen active">
+                <div class="card">
+                    <h3>Welcome back, Hope!</h3>
+                    <p>Here's your daily overview</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="articleCount">0</div>
+                        <div class="stat-label">New Articles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todoCount">0</div>
+                        <div class="stat-label">Pending Todos</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <button class="btn" onclick="showScreen('articles')">📄 View Articles</button>
+                    <button class="btn btn-secondary" onclick="showScreen('todos')">☐ Manage Todos</button>
+                    <button class="btn btn-secondary" onclick="showScreen('calls')">☎ Call Notes</button>
+                </div>
+            </div>
+
+            <!-- Articles Screen -->
+            <div id="articles" class="screen">
+                <div class="card">
+                    <h3>Daily Articles</h3>
+                    <p>Stay updated with the latest news</p>
+                    <button class="btn" onclick="loadArticles()">🔄 Refresh Articles</button>
+                </div>
+
+                <div id="articlesList" class="card">
+                    <div class="loading">Loading articles...</div>
+                </div>
+            </div>
+
+            <!-- Todos Screen -->
+            <div id="todos" class="screen">
+                <div class="card">
+                    <h3>Todo List</h3>
+                    <input type="text" class="input" id="newTodo" placeholder="Add new todo...">
+                    <button class="btn" onclick="addTodo()">Add Todo</button>
+                </div>
+
+                <div id="todosList" class="card">
+                    <div class="empty-state">
+                        <h3>No todos yet</h3>
+                        <p>Add your first todo above</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Notes Screen -->
+            <div id="calls" class="screen">
+                <div class="card">
+                    <h3>Call Notes</h3>
+                    <p>Manage your call transcripts and notes</p>
+                    <button class="btn" onclick="showTranscriptImport()">📋 Import Transcript</button>
+                </div>
+
+                <div id="callNotesList" class="card">
+                    <div class="empty-state">
+                        <h3>No call notes yet</h3>
+                        <p>Import a transcript to get started</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Screen -->
+            <div id="profile" class="screen">
+                <div class="card">
+                    <div class="profile-avatar">HG</div>
+                    <h3 style="text-align: center;">Hope Gilbert</h3>
+                    <p style="text-align: center; color: #666;">hg@mawneypartners.com</p>
+                </div>
+
+                <div class="card">
+                    <h3>App Settings</h3>
+                    <button class="btn btn-secondary" onclick="clearData()">🗑️ Clear All Data</button>
+                    <button class="btn btn-secondary" onclick="exportData()">📤 Export Data</button>
+                </div>
+
+                <div class="card">
+                    <h3>About</h3>
+                    <p><strong>Version:</strong> 1.0.0</p>
+                    <p><strong>Build:</strong> PWA</p>
+                    <p><strong>Last Updated:</strong> <span id="lastUpdated"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="install-prompt" id="installPrompt">
+        <span>Install Mawney Partners for quick access?</span>
+        <button class="install-btn" onclick="installApp()">Install</button>
+        <button class="install-btn" onclick="hideInstallPrompt()">Not Now</button>
+    </div>
+
+    <script>
+        // App State
+        let currentScreen = 'home';
+        let todos = JSON.parse(localStorage.getItem('mawney_todos') || '[]');
+        let callNotes = JSON.parse(localStorage.getItem('mawney_call_notes') || '[]');
+        let articles = [];
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            loadTodos();
+            loadCallNotes();
+            loadArticles();
+            updateLastUpdated();
+            
+            // Check if app can be installed
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
+            
+            // Show install prompt if not already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                hideInstallPrompt();
+            } else {
+                setTimeout(() => {
+                    document.getElementById('installPrompt').classList.add('show');
+                }, 3000);
+            }
+        });
+
+        // Navigation
+        function showScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            currentScreen = screenName;
+            
+            // Update stats when returning to home
+            if (screenName === 'home') {
+                updateStats();
+            }
+        }
+
+        // Articles
+        async function loadArticles() {
+            const articlesList = document.getElementById('articlesList');
+            articlesList.innerHTML = '<div class="loading">Loading articles...</div>';
+            
+            try {
+                const response = await fetch('http://192.168.1.162:5001/api/articles');
+                if (response.ok) {
+                    articles = await response.json();
+                    displayArticles();
+                } else {
+                    throw new Error('Network error');
+                }
+            } catch (error) {
+                articlesList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Unable to load articles</h3>
+                        <p>Check your connection and try again</p>
+                        <button class="btn" onclick="loadArticles()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function displayArticles() {
+            const articlesList = document.getElementById('articlesList');
+            
+            if (articles.length === 0) {
+                articlesList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No articles available</h3>
+                        <p>Check back later for updates</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            articlesList.innerHTML = articles.map(article => `
+                <div class="article-item">
+                    <div class="article-title">${article.title || 'Untitled'}</div>
+                    <div class="article-meta">${formatDate(article.publishedAt || article.published_date || article.timestamp)} • ${article.source || 'Unknown Source'}</div>
+                    <div class="article-summary">${article.content ? article.content.substring(0, 150) + '...' : 'No summary available'}</div>
+                </div>
+            `).join('');
+        }
+
+        // Todos
+        function loadTodos() {
+            const todosList = document.getElementById('todosList');
+            
+            if (todos.length === 0) {
+                todosList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No todos yet</h3>
+                        <p>Add your first todo above</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            todosList.innerHTML = todos.map((todo, index) => `
+                <div class="todo-item">
+                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} 
+                           onchange="toggleTodo(${index})">
+                    <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                    <button onclick="deleteTodo(${index})" style="background: none; border: none; color: #999; cursor: pointer;">×</button>
+                </div>
+            `).join('');
+        }
+
+        function addTodo() {
+            const input = document.getElementById('newTodo');
+            const text = input.value.trim();
+            
+            if (text) {
+                todos.push({
+                    id: Date.now(),
+                    text: text,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                });
+                
+                localStorage.setItem('mawney_todos', JSON.stringify(todos));
+                input.value = '';
+                loadTodos();
+                updateStats();
+            }
+        }
+
+        function toggleTodo(index) {
+            todos[index].completed = !todos[index].completed;
+            localStorage.setItem('mawney_todos', JSON.stringify(todos));
+            loadTodos();
+            updateStats();
+        }
+
+        function deleteTodo(index) {
+            todos.splice(index, 1);
+            localStorage.setItem('mawney_todos', JSON.stringify(todos));
+            loadTodos();
+            updateStats();
+        }
+
+        // Call Notes
+        function loadCallNotes() {
+            const callNotesList = document.getElementById('callNotesList');
+            
+            if (callNotes.length === 0) {
+                callNotesList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No call notes yet</h3>
+                        <p>Import a transcript to get started</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            callNotesList.innerHTML = callNotes.map((note, index) => `
+                <div class="call-note">
+                    <h4>Call ${index + 1} - ${formatDate(note.createdAt)}</h4>
+                    <p>${note.content}</p>
+                </div>
+            `).join('');
+        }
+
+        function showTranscriptImport() {
+            const transcript = prompt('Paste your Teams transcript here:');
+            if (transcript && transcript.trim()) {
+                callNotes.push({
+                    id: Date.now(),
+                    content: transcript.trim(),
+                    createdAt: new Date().toISOString()
+                });
+                
+                localStorage.setItem('mawney_call_notes', JSON.stringify(callNotes));
+                loadCallNotes();
+            }
+        }
+
+        // Stats
+        function updateStats() {
+            document.getElementById('articleCount').textContent = articles.length;
+            document.getElementById('todoCount').textContent = todos.filter(t => !t.completed).length;
+        }
+
+        // Utility Functions
+        function formatDate(dateString) {
+            if (!dateString) return 'Unknown date';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return 'Today';
+            if (diffDays === 2) return 'Yesterday';
+            if (diffDays <= 7) return `${diffDays - 1} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function updateLastUpdated() {
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+        }
+
+        // Data Management
+        function clearData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                localStorage.removeItem('mawney_todos');
+                localStorage.removeItem('mawney_call_notes');
+                todos = [];
+                callNotes = [];
+                loadTodos();
+                loadCallNotes();
+                updateStats();
+            }
+        }
+
+        function exportData() {
+            const data = {
+                todos: todos,
+                callNotes: callNotes,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mawney-partners-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        hideInstallPrompt();
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        function hideInstallPrompt() {
+            document.getElementById('installPrompt').classList.remove('show');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1': showScreen('home'); break;
+                    case '2': showScreen('articles'); break;
+                    case '3': showScreen('todos'); break;
+                    case '4': showScreen('calls'); break;
+                    case '5': showScreen('profile'); break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

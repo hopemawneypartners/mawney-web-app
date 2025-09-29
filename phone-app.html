@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mawney Partners App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #007AFF, #0056CC);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            color: #007AFF;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: #007AFF;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .login-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .login-button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-button:hover {
+            background: #0056CC;
+        }
+        
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #E3F2FD;
+            border-radius: 10px;
+            color: #007AFF;
+        }
+        
+        .demo-section {
+            margin-top: 20px;
+        }
+        
+        .demo-button {
+            background: #34C759;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        
+        .demo-button:hover {
+            background: #28A745;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏢 Mawney Partners</h1>
+        <p>Company App - Hope Gilbert</p>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h3>📱 App Features</h3>
+            <ul class="feature-list">
+                <li>
+                    <div class="feature-icon">📰</div>
+                    Daily relevant articles with real-time updates
+                </li>
+                <li>
+                    <div class="feature-icon">📝</div>
+                    To-do lists and task management
+                </li>
+                <li>
+                    <div class="feature-icon">📞</div>
+                    Call notes and contact management
+                </li>
+                <li>
+                    <div class="feature-icon">🤖</div>
+                    AI assistant for job ads and CV formatting
+                </li>
+                <li>
+                    <div class="feature-icon">👤</div>
+                    Personalized profile with photo upload
+                </li>
+                <li>
+                    <div class="feature-icon">🔔</div>
+                    Smart notifications and reminders
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3>🚀 Quick Demo</h3>
+            <div class="demo-section">
+                <button class="demo-button" onclick="showArticles()">View Articles</button>
+                <button class="demo-button" onclick="showTodos()">My Todos</button>
+                <button class="demo-button" onclick="showProfile()">Profile</button>
+            </div>
+        </div>
+        
+        <div class="login-section">
+            <button class="login-button" onclick="login()">
+                Login as Hope Gilbert
+            </button>
+        </div>
+        
+        <div class="status">
+            ✅ App is running successfully on your phone!<br>
+            📱 This is a simplified version for quick testing
+        </div>
+    </div>
+    
+    <script>
+        function login() {
+            alert('Login successful!\n\nEmail: hg@mawneypartners.com\nPassword: Hunter1972\n\nWelcome back, Hope!');
+        }
+        
+        function showArticles() {
+            alert('📰 Recent Articles:\n\n• Global Credit Outlook 2025\n• Senior Analyst Joins Leading Private Debt Fund\n• New CLO Issuance Exceeds Expectations\n\nReal-time updates are working!');
+        }
+        
+        function showTodos() {
+            alert('📝 Your Todos:\n\n• Review Q4 credit reports\n• Schedule client calls\n• Update candidate profiles\n\nAll tasks are personalized to your role!');
+        }
+        
+        function showProfile() {
+            alert('👤 Hope Gilbert Profile:\n\n• Role: Credit Executive Search\n• Department: Mawney Partners\n• Email: hg@mawneypartners.com\n\nProfile picture upload is available!');
+        }
+        
+        // Show welcome message
+        setTimeout(() => {
+            alert('🎉 Welcome to Mawney Partners App!\n\nThis is running on your phone successfully. The full app includes:\n\n• Real-time article monitoring\n• Personalized user experience\n• AI-powered features\n• Call notes integration\n\nTap the buttons above to explore!');
+        }, 1000);
+    </script>
+</body>
+</html>
+

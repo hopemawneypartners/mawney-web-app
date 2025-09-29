@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mawney Partners App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9f7f3;
+            color: #2d2926;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #004b35, #266b52);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .nav {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .nav-item.active {
+            border-bottom-color: #004b35;
+            color: #004b35;
+        }
+        
+        .nav-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .content {
+            padding: 20px;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .card h3 {
+            color: #004b35;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .article {
+            border-left: 4px solid #4d8b70;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .article h4 {
+            color: #2d2926;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .article p {
+            color: #4d4742;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .article .meta {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .btn {
+            background: #004b35;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #266b52;
+        }
+        
+        .btn-secondary {
+            background: #4d8b70;
+        }
+        
+        .btn-secondary:hover {
+            background: #266b52;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffe6e6;
+            color: #d32f2f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: #004b35;
+        }
+        
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+        
+        .todo-checkbox {
+            margin-right: 10px;
+        }
+        
+        .todo-text {
+            flex: 1;
+        }
+        
+        .todo-completed {
+            text-decoration: line-through;
+            color: #666;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: #f0f8f0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .status h3 {
+            color: #004b35;
+            margin-bottom: 10px;
+        }
+        
+        .status p {
+            color: #4d4742;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mawney Partners</h1>
+            <p>Company App - Web Version</p>
+        </div>
+        
+        <div class="nav">
+            <div class="nav-item active" onclick="showSection('home')">Home</div>
+            <div class="nav-item" onclick="showSection('articles')">Articles</div>
+            <div class="nav-item" onclick="showSection('todos')">Todos</div>
+            <div class="nav-item" onclick="showSection('profile')">Profile</div>
+        </div>
+        
+        <div class="content">
+            <!-- Home Section -->
+            <div id="home" class="section active">
+                <div class="card">
+                    <h3>Welcome, Hope!</h3>
+                    <p>Your Mawney Partners app is running successfully.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <button class="btn" onclick="showSection('articles')">View Articles</button>
+                    <button class="btn btn-secondary" onclick="showSection('todos')">Manage Todos</button>
+                </div>
+                
+                <div class="status">
+                    <h3>System Status</h3>
+                    <p id="status-text">Checking connection...</p>
+                </div>
+            </div>
+            
+            <!-- Articles Section -->
+            <div id="articles" class="section">
+                <div class="card">
+                    <h3>Latest Articles</h3>
+                    <div id="articles-content">
+                        <div class="loading">Loading articles...</div>
+                    </div>
+                    <button class="btn" onclick="loadArticles()">Refresh Articles</button>
+                </div>
+            </div>
+            
+            <!-- Todos Section -->
+            <div id="todos" class="section">
+                <div class="card">
+                    <h3>My Todos</h3>
+                    <div id="todos-content">
+                        <div class="loading">Loading todos...</div>
+                    </div>
+                    <input type="text" class="input" id="new-todo" placeholder="Add new todo...">
+                    <button class="btn" onclick="addTodo()">Add Todo</button>
+                </div>
+            </div>
+            
+            <!-- Profile Section -->
+            <div id="profile" class="section">
+                <div class="card">
+                    <h3>Profile</h3>
+                    <p><strong>Name:</strong> Hope Gilbert</p>
+                    <p><strong>Email:</strong> hg@mawneypartners.com</p>
+                    <p><strong>Role:</strong> Credit Executive Search</p>
+                </div>
+                
+                <div class="card">
+                    <h3>App Information</h3>
+                    <p>This is a web version of the Mawney Partners app.</p>
+                    <p>For full functionality, use the native app version.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let todos = [];
+        
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+            
+            // Load content for specific sections
+            if (sectionName === 'articles') {
+                loadArticles();
+            } else if (sectionName === 'todos') {
+                loadTodos();
+            } else if (sectionName === 'home') {
+                checkStatus();
+            }
+        }
+        
+        async function checkStatus() {
+            const statusText = document.getElementById('status-text');
+            try {
+                const response = await fetch('http://192.168.1.162:5001/api/health');
+                if (response.ok) {
+                    statusText.textContent = '✅ Connected to API server';
+                    statusText.style.color = '#2e7d32';
+                } else {
+                    statusText.textContent = '⚠️ API server responding with errors';
+                    statusText.style.color = '#f57c00';
+                }
+            } catch (error) {
+                statusText.textContent = '❌ Cannot connect to API server';
+                statusText.style.color = '#d32f2f';
+            }
+        }
+        
+        async function loadArticles() {
+            const content = document.getElementById('articles-content');
+            content.innerHTML = '<div class="loading">Loading articles...</div>';
+            
+            try {
+                const response = await fetch('http://192.168.1.162:5001/api/articles');
+                const data = await response.json();
+                
+                if (data.success && data.articles) {
+                    let html = '';
+                    data.articles.slice(0, 10).forEach(article => {
+                        html += `
+                            <div class="article">
+                                <h4>${article.title}</h4>
+                                <p>${article.content}</p>
+                                <div class="meta">
+                                    Source: ${article.source} | 
+                                    Category: ${article.category} | 
+                                    ${new Date(article.publishedAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    content.innerHTML = html;
+                } else {
+                    content.innerHTML = '<div class="error">Failed to load articles</div>';
+                }
+            } catch (error) {
+                content.innerHTML = '<div class="error">Error loading articles: ' + error.message + '</div>';
+            }
+        }
+        
+        function loadTodos() {
+            const content = document.getElementById('todos-content');
+            
+            if (todos.length === 0) {
+                content.innerHTML = '<div class="loading">No todos yet. Add one above!</div>';
+                return;
+            }
+            
+            let html = '';
+            todos.forEach((todo, index) => {
+                html += `
+                    <div class="todo-item">
+                        <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} 
+                               onchange="toggleTodo(${index})">
+                        <span class="todo-text ${todo.completed ? 'todo-completed' : ''}">${todo.text}</span>
+                    </div>
+                `;
+            });
+            content.innerHTML = html;
+        }
+        
+        function addTodo() {
+            const input = document.getElementById('new-todo');
+            const text = input.value.trim();
+            
+            if (text) {
+                todos.push({
+                    text: text,
+                    completed: false,
+                    id: Date.now()
+                });
+                input.value = '';
+                loadTodos();
+            }
+        }
+        
+        function toggleTodo(index) {
+            todos[index].completed = !todos[index].completed;
+            loadTodos();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkStatus();
+            loadTodos();
+        });
+        
+        // Handle Enter key in todo input
+        document.getElementById('new-todo').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+    </script>
+</body>
+</html>
+
