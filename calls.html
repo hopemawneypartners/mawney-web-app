@@ -683,14 +683,29 @@
             // Sort calls by date (newest first)
             const sortedCalls = calls.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            const callsHTML = sortedCalls.map((call, index) => `
-                <div class="call-item" onclick="openNotePopup(calls[${calls.indexOf(call)}])" style="cursor: pointer;">
-                    <div class="call-title">${call.title}</div>
-                    <div class="call-meta">Date: ${new Date(call.date).toLocaleDateString()}</div>
-                    <div class="call-notes">${call.notes || call.transcription || 'No notes available'}</div>
-                    <button class="delete-button" onclick="event.stopPropagation(); deleteCall(${index})">Delete</button>
-                </div>
-            `).join('');
+            const callsHTML = sortedCalls.map((call, index) => {
+                // Format date properly
+                let dateDisplay = 'Unknown date';
+                if (call.date) {
+                    try {
+                        const date = new Date(call.date);
+                        if (!isNaN(date.getTime())) {
+                            dateDisplay = date.toLocaleDateString();
+                        }
+                    } catch (e) {
+                        dateDisplay = call.date; // Use raw date if parsing fails
+                    }
+                }
+                
+                return `
+                    <div class="call-item" onclick="openNotePopup(calls[${calls.indexOf(call)}])" style="cursor: pointer;">
+                        <div class="call-title">${call.title}</div>
+                        <div class="call-meta">Date: ${dateDisplay}${call.time ? ` at ${call.time}` : ''}</div>
+                        <div class="call-notes">${call.notes || call.transcription || 'No notes available'}</div>
+                        <button class="delete-button" onclick="event.stopPropagation(); deleteCall(${index})">Delete</button>
+                    </div>
+                `;
+            }).join('');
             
             callsList.innerHTML = callsHTML;
         }
@@ -706,9 +721,15 @@
                 return;
             }
             
+            // Get current time
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
+            
             calls.push({
+                id: Date.now(),
                 title: title,
                 date: date,
+                time: time,
                 notes: notes,
                 createdAt: new Date().toISOString()
             });
@@ -747,10 +768,18 @@
                     });
                     
                     isRecording = true;
+                    
+                    // Get current date and time
+                    const now = new Date();
+                    const date = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+                    const time = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
+                    
                     currentCall = {
                         id: Date.now(),
                         startTime: new Date().toISOString(),
                         title: 'Call Recording',
+                        date: date,
+                        time: time,
                         transcription: '',
                         notes: '',
                         participants: '',
@@ -902,8 +931,8 @@
             
             // Populate fields
             document.getElementById('editTitleDisplay').textContent = note.title || '';
-            document.getElementById('editDateDisplay').textContent = note.date || '';
-            document.getElementById('editTimeDisplay').textContent = note.time || '';
+            document.getElementById('editDateDisplay').textContent = note.date || 'No date set';
+            document.getElementById('editTimeDisplay').textContent = note.time || 'No time set';
             
             // Show transcription if available
             if (note.transcription) {
