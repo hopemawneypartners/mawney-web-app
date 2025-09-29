@@ -284,14 +284,21 @@
         // Load chats from server and localStorage
         async function loadChats() {
             try {
+                console.log('🔄 Loading chats for user:', currentUser.id);
+                console.log('🌐 API URL:', `${API_BASE_URL}/api/chats?user_id=${currentUser.id}`);
+                
                 // First try to load from server
                 const response = await fetch(`${API_BASE_URL}/api/chats?user_id=${currentUser.id}`);
+                console.log('📡 Server response status:', response.status);
+                
                 const data = await response.json();
+                console.log('📡 Server response data:', data);
                 
                 if (data.success && data.chats) {
                     chats = data.chats;
                     console.log('✅ Loaded chats from server:', chats.length);
                 } else {
+                    console.log('⚠️ No chats from server, trying localStorage');
                     // Fallback to localStorage
                     const savedChats = localStorage.getItem(`chats_${currentUser.id}`);
                     if (savedChats) {
