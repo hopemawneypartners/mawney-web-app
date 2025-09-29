@@ -485,10 +485,13 @@
                     </div>
                     <button class="stop-button" onclick="stopRecording()">Stop Recording</button>
                 </div>
-                <div class="transcription-container">
-                    <div class="transcription-label">Live Transcription:</div>
-                    <div id="transcriptionText" class="transcription-text">Listening for speech...</div>
+            <div class="transcription-container">
+                <div class="transcription-label">Live Transcription:</div>
+                <div id="transcriptionText" class="transcription-text">Click "Start Recording" to begin...</div>
+                <div class="recording-status" id="recordingStatus" style="font-size: 0.8rem; color: #666; margin-top: 8px;">
+                    <span id="statusText">Ready to record</span>
                 </div>
+            </div>
             </div>
             
             <!-- Add Call Section -->
@@ -600,13 +603,38 @@
         let recordingInterval = null;
         let selectedNote = null;
         let isEditing = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recognition = null;
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
             loadCalls();
             setDefaultDate();
+            checkBrowserCompatibility();
         });
+        
+        // Check browser compatibility for recording features
+        function checkBrowserCompatibility() {
+            const statusText = document.getElementById('statusText');
+            
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                statusText.textContent = 'Recording not supported - use Chrome, Firefox, or Edge';
+                statusText.style.color = '#ff4444';
+                return false;
+            }
+            
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                statusText.textContent = 'Speech recognition not supported - use Chrome or Edge';
+                statusText.style.color = '#ff4444';
+                return false;
+            }
+            
+            statusText.textContent = 'Ready to record - browser compatible';
+            statusText.style.color = '#266b52';
+            return true;
+        }
         
         // Check if user is logged in
         function checkAuthStatus() {
@@ -704,26 +732,61 @@
         }
         
         // Recording functions
-        function startRecording() {
+        async function startRecording() {
             if (isRecording) return;
             
             if (confirm('Start Call Recording\n\nThis will begin recording and transcribing your phone call. Make sure you have permission to record.')) {
-                isRecording = true;
-                currentCall = {
-                    id: Date.now(),
-                    startTime: new Date().toISOString(),
-                    title: 'Call Recording',
-                    transcription: '',
-                    notes: '',
-                    participants: '',
-                    status: 'recording'
-                };
-                
-                // Show recording section
-                document.getElementById('recordingSection').classList.add('active');
-                
-                // Simulate transcription process
-                simulateTranscription();
+                try {
+                    // Request microphone access
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        } 
+                    });
+                    
+                    isRecording = true;
+                    currentCall = {
+                        id: Date.now(),
+                        startTime: new Date().toISOString(),
+                        title: 'Call Recording',
+                        transcription: '',
+                        notes: '',
+                        participants: '',
+                        status: 'recording'
+                    };
+                    
+                    // Show recording section
+                    document.getElementById('recordingSection').classList.add('active');
+                    
+                    // Set up MediaRecorder
+                    mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: 'audio/webm;codecs=opus'
+                    });
+                    
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        // You could upload this to a server for processing
+                        console.log('Recording stopped, audio blob created:', audioBlob);
+                    };
+                    
+                    // Start recording
+                    mediaRecorder.start(1000); // Collect data every second
+                    
+                    // Set up speech recognition
+                    setupSpeechRecognition();
+                    
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    alert('Error accessing microphone. Please check your permissions and try again.');
+                }
             }
         }
         
@@ -732,6 +795,16 @@
             
             if (confirm('Stop Recording\n\nAre you sure you want to stop recording this call?')) {
                 isRecording = false;
+                
+                // Stop media recorder
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+                
+                // Stop speech recognition
+                if (recognition) {
+                    recognition.stop();
+                }
                 
                 if (currentCall) {
                     currentCall.endTime = new Date().toISOString();
@@ -756,40 +829,70 @@
             }
         }
         
-        function simulateTranscription() {
-            const transcriptionText = document.getElementById('transcriptionText');
+        function setupSpeechRecognition() {
+            // Check if speech recognition is supported
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.warn('Speech recognition not supported in this browser');
+                document.getElementById('transcriptionText').textContent = 'Speech recognition not supported in this browser';
+                return;
+            }
             
-            // Show initial message
-            transcriptionText.textContent = "Listening for speech...";
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
             
-            // After 2 seconds, start showing realistic transcription
-            setTimeout(() => {
-                const sampleTranscriptions = [
-                    "Hello, this is John from ABC Corp. How are you today?",
-                    "I wanted to discuss the quarterly results and our upcoming projects.",
-                    "The market conditions have been challenging, but we're seeing some positive trends.",
-                    "What are your thoughts on the new regulatory changes?",
-                    "I think we should schedule a follow-up meeting next week.",
-                    "Thank you for your time today. I'll send you the summary by email."
-                ];
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            let fullTranscript = '';
+            
+            recognition.onstart = () => {
+                console.log('Speech recognition started');
+                document.getElementById('transcriptionText').textContent = 'Listening for speech...';
+                document.getElementById('statusText').textContent = 'Speech recognition active - speak clearly';
+            };
+            
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
                 
-                let currentIndex = 0;
-                let currentText = "";
-                
-                recordingInterval = setInterval(() => {
-                    if (currentIndex < sampleTranscriptions.length) {
-                        currentText += sampleTranscriptions[currentIndex] + " ";
-                        transcriptionText.textContent = currentText;
-                        currentCall.transcription = currentText;
-                        currentIndex++;
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    
+                    if (event.results[i].isFinal) {
+                        fullTranscript += transcript + ' ';
                     } else {
-                        // Add more realistic transcription
-                        currentText += "The call is continuing... ";
-                        transcriptionText.textContent = currentText;
-                        currentCall.transcription = currentText;
+                        interimTranscript += transcript;
                     }
-                }, 4000); // Slower updates to look more realistic
-            }, 2000);
+                }
+                
+                const displayText = fullTranscript + interimTranscript;
+                document.getElementById('transcriptionText').textContent = displayText;
+                
+                if (currentCall) {
+                    currentCall.transcription = displayText;
+                }
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                document.getElementById('transcriptionText').textContent = `Speech recognition error: ${event.error}`;
+                document.getElementById('statusText').textContent = `Error: ${event.error}`;
+            };
+            
+            recognition.onend = () => {
+                console.log('Speech recognition ended');
+                if (isRecording) {
+                    // Restart recognition if still recording
+                    setTimeout(() => {
+                        if (isRecording) {
+                            recognition.start();
+                        }
+                    }, 100);
+                }
+            };
+            
+            // Start recognition
+            recognition.start();
         }
         
         // Popup functions
