@@ -281,18 +281,67 @@
             window.location.href = 'index.html';
         }
         
-        // Load chats from localStorage
-        function loadChats() {
-            const savedChats = localStorage.getItem(`chats_${currentUser.id}`);
-            if (savedChats) {
-                chats = JSON.parse(savedChats);
+        // Load chats from server and localStorage
+        async function loadChats() {
+            try {
+                // First try to load from server
+                const response = await fetch(`${API_BASE_URL}/api/chats?user_id=${currentUser.id}`);
+                const data = await response.json();
+                
+                if (data.success && data.chats) {
+                    chats = data.chats;
+                    console.log('✅ Loaded chats from server:', chats.length);
+                } else {
+                    // Fallback to localStorage
+                    const savedChats = localStorage.getItem(`chats_${currentUser.id}`);
+                    if (savedChats) {
+                        chats = JSON.parse(savedChats);
+                        console.log('ℹ️ Loaded chats from localStorage:', chats.length);
+                        
+                        // Try to sync to server
+                        await syncChatsToServer();
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error loading chats from server:', error);
+                // Fallback to localStorage
+                const savedChats = localStorage.getItem(`chats_${currentUser.id}`);
+                if (savedChats) {
+                    chats = JSON.parse(savedChats);
+                    console.log('ℹ️ Loaded chats from localStorage fallback:', chats.length);
+                }
             }
+            
             displayChats();
         }
         
-        // Save chats to localStorage
-        function saveChats() {
+        // Sync chats to server
+        async function syncChatsToServer() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/chats`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        chats: chats
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    console.log('✅ Chats synced to server successfully');
+                }
+            } catch (error) {
+                console.error('❌ Error syncing chats to server:', error);
+            }
+        }
+        
+        // Save chats to localStorage and server
+        async function saveChats() {
             localStorage.setItem(`chats_${currentUser.id}`, JSON.stringify(chats));
+            await syncChatsToServer();
         }
         
         // Display chats
