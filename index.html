@@ -36,25 +36,27 @@
         
         .header-content {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         .header-text {
+            flex: 1;
             text-align: center;
         }
         
         .header-logo {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            flex-shrink: 0;
+            margin-left: 20px;
         }
         
         .logo {
-            height: 30px;
+            height: 40px;
             width: auto;
+            opacity: 0.9;
         }
         
         .header h1 {
@@ -85,11 +87,12 @@
         
         .login-form {
             background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            border: 1px solid rgba(0,75,53,0.1);
         }
         
         .form-group {
@@ -105,33 +108,39 @@
         
         .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            background: #fafafa;
         }
         
         .form-group input:focus {
             outline: none;
             border-color: #004b35;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0,75,53,0.1);
         }
         
         .btn {
-            background: #004b35;
+            background: linear-gradient(135deg, #004b35, #266b52);
             color: white;
-            padding: 12px 24px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
             width: 100%;
+            box-shadow: 0 4px 16px rgba(0,75,53,0.3);
         }
         
         .btn:hover {
-            background: #266b52;
+            background: linear-gradient(135deg, #266b52, #004b35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,75,53,0.4);
         }
         
         .dashboard {
@@ -381,17 +390,21 @@
                 </div>
             </div>
             
-            <div class="login-form">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
-                </div>
-                <button class="btn" onclick="login()">Sign In</button>
-            </div>
+                    <div class="login-form">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h2 style="color: #004b35; margin-bottom: 8px; font-size: 1.5rem;">Welcome Back</h2>
+                            <p style="color: #666; font-size: 0.95rem;">Sign in to access your credit intelligence platform</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="Enter your email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="Enter your password">
+                        </div>
+                        <button class="btn" onclick="login()">Sign In to Dashboard</button>
+                    </div>
         </div>
         
         <!-- Dashboard -->
