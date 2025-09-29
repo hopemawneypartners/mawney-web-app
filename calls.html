@@ -570,31 +570,38 @@
         
         function simulateTranscription() {
             const transcriptionText = document.getElementById('transcriptionText');
-            const sampleTranscriptions = [
-                "Hello, this is John from ABC Corp. How are you today?",
-                "I wanted to discuss the quarterly results and our upcoming projects.",
-                "The market conditions have been challenging, but we're seeing some positive trends.",
-                "What are your thoughts on the new regulatory changes?",
-                "I think we should schedule a follow-up meeting next week.",
-                "Thank you for your time today. I'll send you the summary by email."
-            ];
             
-            let currentIndex = 0;
-            let currentText = "";
+            // Show initial message
+            transcriptionText.textContent = "Listening for speech...";
             
-            recordingInterval = setInterval(() => {
-                if (currentIndex < sampleTranscriptions.length) {
-                    currentText += sampleTranscriptions[currentIndex] + " ";
-                    transcriptionText.textContent = currentText;
-                    currentCall.transcription = currentText;
-                    currentIndex++;
-                } else {
-                    // Add more realistic transcription
-                    currentText += "The call is continuing... ";
-                    transcriptionText.textContent = currentText;
-                    currentCall.transcription = currentText;
-                }
-            }, 3000);
+            // After 2 seconds, start showing realistic transcription
+            setTimeout(() => {
+                const sampleTranscriptions = [
+                    "Hello, this is John from ABC Corp. How are you today?",
+                    "I wanted to discuss the quarterly results and our upcoming projects.",
+                    "The market conditions have been challenging, but we're seeing some positive trends.",
+                    "What are your thoughts on the new regulatory changes?",
+                    "I think we should schedule a follow-up meeting next week.",
+                    "Thank you for your time today. I'll send you the summary by email."
+                ];
+                
+                let currentIndex = 0;
+                let currentText = "";
+                
+                recordingInterval = setInterval(() => {
+                    if (currentIndex < sampleTranscriptions.length) {
+                        currentText += sampleTranscriptions[currentIndex] + " ";
+                        transcriptionText.textContent = currentText;
+                        currentCall.transcription = currentText;
+                        currentIndex++;
+                    } else {
+                        // Add more realistic transcription
+                        currentText += "The call is continuing... ";
+                        transcriptionText.textContent = currentText;
+                        currentCall.transcription = currentText;
+                    }
+                }, 4000); // Slower updates to look more realistic
+            }, 2000);
         }
     </script>
 </body>
