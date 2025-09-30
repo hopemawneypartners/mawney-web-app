@@ -218,6 +218,39 @@
             padding: 40px;
             color: #4d4742;
         }
+        
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 8px;
+            word-wrap: break-word;
+        }
+        
+        .message-sent {
+            align-self: flex-end;
+            background: #004b35;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message-received {
+            align-self: flex-start;
+            background: #e9e9eb;
+            color: #2d2926;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-content {
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -235,6 +268,32 @@
             <!-- Chat List -->
             <div class="chat-list" id="chatList">
                 <div class="empty-state">No chats yet. Create a new chat to get started!</div>
+            </div>
+            
+            <!-- Chat Interface (hidden by default) -->
+            <div id="chatInterface" style="display: none; flex-direction: column; height: calc(100vh - 140px); background: white; border-radius: 12px; overflow: hidden;">
+                <div style="display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #e0e0e0; background: #f9f7f3;">
+                    <button onclick="closeChat()" style="background: none; border: none; font-size: 24px; cursor: pointer; margin-right: 15px; color: #004b35;">←</button>
+                    <div style="flex: 1;">
+                        <div id="chatName" style="font-size: 18px; font-weight: 600; color: #2d2926;"></div>
+                    </div>
+                </div>
+                
+                <div id="messagesContainer" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
+                
+                <div style="display: flex; padding: 15px; border-top: 1px solid #e0e0e0; background: #f9f7f3; gap: 10px;">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        placeholder="Type a message..." 
+                        style="flex: 1; padding: 12px 16px; border: 1px solid #e0e0e0; border-radius: 25px; font-size: 16px; outline: none;"
+                        onkeypress="if(event.key === 'Enter') sendMessage()"
+                    />
+                    <button 
+                        onclick="sendMessage()" 
+                        style="background: #004b35; color: white; border: none; border-radius: 25px; padding: 12px 24px; font-weight: 600; cursor: pointer; white-space: nowrap;"
+                    >Send</button>
+                </div>
             </div>
         </div>
         
@@ -399,10 +458,85 @@
             displayChats();
         }
         
-        // Open chat (placeholder for now)
+        // Open chat
+        let currentChatIndex = null;
+        
         function openChat(index) {
+            currentChatIndex = index;
             const chat = chats[index];
-            alert(`Opening chat: ${chat.name}\n\nThis would open the chat interface. For now, this is a placeholder.`);
+            
+            // Hide chat list, show chat interface
+            document.getElementById('chatList').style.display = 'none';
+            document.querySelector('.new-chat-button').style.display = 'none';
+            document.getElementById('chatInterface').style.display = 'flex';
+            
+            // Update chat header
+            document.getElementById('chatName').textContent = chat.name;
+            
+            // Load and display messages
+            displayMessages(chat);
+        }
+        
+        function closeChat() {
+            currentChatIndex = null;
+            document.getElementById('chatInterface').style.display = 'none';
+            document.getElementById('chatList').style.display = 'block';
+            document.querySelector('.new-chat-button').style.display = 'block';
+        }
+        
+        function displayMessages(chat) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messages = chat.messages || [];
+            
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = '<div style="text-align: center; color: #999; padding: 40px;">No messages yet. Start the conversation!</div>';
+                return;
+            }
+            
+            const messagesHTML = messages.map(msg => `
+                <div class="message ${msg.senderId === currentUser.id ? 'message-sent' : 'message-received'}">
+                    <div class="message-content">${msg.text}</div>
+                    <div class="message-time">${formatMessageTime(msg.timestamp)}</div>
+                </div>
+            `).join('');
+            
+            messagesContainer.innerHTML = messagesHTML;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const messageText = input.value.trim();
+            
+            if (!messageText || currentChatIndex === null) return;
+            
+            const chat = chats[currentChatIndex];
+            const message = {
+                id: Date.now(),
+                chatId: chat.id,
+                senderId: currentUser.id,
+                text: messageText,
+                timestamp: new Date().toISOString(),
+                status: 'sent'
+            };
+            
+            if (!chat.messages) {
+                chat.messages = [];
+            }
+            
+            chat.messages.push(message);
+            chat.lastMessage = messageText;
+            chat.lastActivity = message.timestamp;
+            
+            saveChats();
+            displayMessages(chat);
+            
+            input.value = '';
+        }
+        
+        function formatMessageTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
         
         // Format time
