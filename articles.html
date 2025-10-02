@@ -197,6 +197,12 @@
         .article {
             border-bottom: 1px solid #e0e0e0;
             padding: 15px 0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .article:hover {
+            background-color: #f8f8f8;
         }
         
         .article:last-child {
@@ -452,7 +458,7 @@
             }
             
             const articlesHTML = filteredArticles.map(article => `
-                <div class="article">
+                <div class="article" onclick="handleArticleClick('${article.url || article.link || ''}')">
                     <div class="article-title">${article.title || 'Untitled Article'}</div>
                     <div class="article-meta">Source: ${article.source || 'Unknown'} • ${formatDateWithTime(article.publishedAt || article.published_date || article.timestamp || article.date)}</div>
                     <div class="article-summary">${article.content || article.summary || 'No content available'}</div>
@@ -460,6 +466,16 @@
             `).join('');
             
             articlesList.innerHTML = articlesHTML;
+        }
+        
+        // Handle article click
+        function handleArticleClick(url) {
+            if (url && url.trim() !== '') {
+                // Open article in new tab
+                window.open(url, '_blank');
+            } else {
+                alert('No URL available for this article');
+            }
         }
         
         // Load AI Summary
