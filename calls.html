@@ -595,6 +595,85 @@
     </div>
 
     <script>
+        // API Configuration
+        const API_BASE_URL = 'https://mawney-daily-news-api.onrender.com';
+        
+        // Pre-configured users (matching mobile app)
+        const USERS = [
+            {
+                id: 'hope_gilbert',
+                name: 'Hope Gilbert',
+                email: 'hg@mawneypartners.com',
+                password: 'Hunter1972',
+                avatar: 'assets/profile-pictures/hope.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'joshua_trister',
+                name: 'Joshua Trister',
+                email: 'jt@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/josh.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'rachel_trister',
+                name: 'Rachel Trister',
+                email: 'finance@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/rachel.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'jack_dalby',
+                name: 'Jack Dalby',
+                email: 'jd@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/jack.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'harry_edleman',
+                name: 'Harry Edleman',
+                email: 'he@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/harry.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'tyler_johnson_thomas',
+                name: 'Tyler Johnson Thomas',
+                email: 'tjt@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/tyler.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            }
+        ];
+        
         // User data
         let currentUser = null;
         let calls = [];
@@ -607,10 +686,97 @@
         let audioChunks = [];
         let recognition = null;
         
+        // Authentication functions
+        function checkAuthStatus() {
+            const userData = localStorage.getItem('mawney_user');
+            if (userData) {
+                try {
+                    currentUser = JSON.parse(userData);
+                    loadCallNotesFromServer();
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    redirectToLogin();
+                }
+            } else {
+                redirectToLogin();
+            }
+        }
+        
+        function redirectToLogin() {
+            window.location.href = 'index.html';
+        }
+        
+        function authenticateUser(email, password) {
+            const user = USERS.find(u => u.email === email && u.password === password);
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('mawney_user', JSON.stringify(user));
+                loadCallNotesFromServer();
+                return true;
+            }
+            return false;
+        }
+        
+        // API functions for call notes
+        async function loadCallNotesFromServer() {
+            if (!currentUser) return;
+            
+            try {
+                console.log('🔄 Loading call notes for user:', currentUser.email);
+                const response = await fetch(`${API_BASE_URL}/api/user/call-notes?email=${currentUser.email}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📡 Server response data:', data);
+                    
+                    if (data.success && data.callNotes) {
+                        calls = data.callNotes;
+                        console.log('✅ Loaded call notes from server:', calls.length);
+                        displayCalls();
+                    } else {
+                        console.log('⚠️ No call notes found on server, using local data');
+                        loadCalls();
+                    }
+                } else {
+                    console.error('❌ Server error:', response.status);
+                    loadCalls(); // Fallback to local data
+                }
+            } catch (error) {
+                console.error('❌ Error loading call notes from server:', error);
+                loadCalls(); // Fallback to local data
+            }
+        }
+        
+        async function saveCallNotesToServer(callNotes) {
+            if (!currentUser) return;
+            
+            try {
+                console.log('💾 Saving call notes to server:', callNotes.length);
+                const response = await fetch(`${API_BASE_URL}/api/user/call-notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: currentUser.email,
+                        callNotes: callNotes
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Call notes saved to server:', data);
+                } else {
+                    console.error('❌ Error saving call notes to server:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Error saving call notes to server:', error);
+            }
+        }
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
-            loadCalls();
             setDefaultDate();
             checkBrowserCompatibility();
         });
@@ -669,6 +835,8 @@
         // Save calls to localStorage
         function saveCalls() {
             localStorage.setItem(`calls_${currentUser.id}`, JSON.stringify(calls));
+            // Also save to server
+            saveCallNotesToServer(calls);
         }
         
         // Display calls
