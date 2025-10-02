@@ -318,6 +318,82 @@
         // API Configuration
         const API_BASE_URL = 'https://mawney-daily-news-api.onrender.com';
         
+        // Pre-configured users (matching mobile app)
+        const USERS = [
+            {
+                id: 'hope_gilbert',
+                name: 'Hope Gilbert',
+                email: 'hg@mawneypartners.com',
+                password: 'Hunter1972',
+                avatar: 'assets/profile-pictures/hope.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'joshua_trister',
+                name: 'Joshua Trister',
+                email: 'jt@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/josh.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'rachel_trister',
+                name: 'Rachel Trister',
+                email: 'finance@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/rachel.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'jack_dalby',
+                name: 'Jack Dalby',
+                email: 'jd@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/jack.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'harry_edleman',
+                name: 'Harry Edleman',
+                email: 'he@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/harry.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'tyler_johnson_thomas',
+                name: 'Tyler Johnson Thomas',
+                email: 'tjt@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/tyler.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            }
+        ];
+        
         // User data
         let currentUser = null;
         let chats = [];
@@ -328,14 +404,43 @@
             loadChats();
         });
         
-        // Check if user is logged in
+        // Check if user is logged in (matching mobile app)
         function checkAuthStatus() {
             const savedUser = localStorage.getItem('mawney_user');
             if (!savedUser) {
+                console.log('❌ No saved user found, redirecting to login');
                 window.location.href = 'index.html';
                 return;
             }
-            currentUser = JSON.parse(savedUser);
+            
+            try {
+                currentUser = JSON.parse(savedUser);
+                console.log('✅ Web app - User loaded:', currentUser.name);
+            } catch (error) {
+                console.error('❌ Error parsing saved user:', error);
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Authenticate user (matching mobile app logic)
+        function authenticateUser(email, password) {
+            console.log('🔐 Web app - Authenticating user:', email);
+            
+            const user = USERS.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                console.log('✅ Web app - User found:', user.name);
+                currentUser = { ...user }; // Create fresh copy
+                
+                // Save to localStorage (web equivalent of AsyncStorage)
+                localStorage.setItem('mawney_user', JSON.stringify(currentUser));
+                console.log('✅ Web app - User saved to localStorage');
+                
+                return { success: true, user: currentUser };
+            }
+            
+            console.log('❌ Web app - User not found or invalid password');
+            return { success: false, error: 'Invalid credentials' };
         }
         
         // Go back to home
@@ -343,10 +448,10 @@
             window.location.href = 'index.html';
         }
         
-        // Load chats from server and localStorage
+        // Load chats from server and localStorage (matching mobile app)
         async function loadChats() {
             try {
-                console.log('🔄 Loading chats for user:', currentUser.id);
+                console.log('🔄 Web app - Loading chats for user:', currentUser.id);
                 console.log('🌐 API URL:', `${API_BASE_URL}/api/chats?user_id=${currentUser.id}`);
                 
                 // First try to load from server
@@ -358,26 +463,35 @@
                 
                 if (data.success && data.chats) {
                     chats = data.chats;
-                    console.log('✅ Loaded chats from server:', chats.length);
+                    console.log('✅ Web app - Loaded chats from server:', chats.length);
+                    
+                    // Save to localStorage for offline access
+                    localStorage.setItem(`chats_${currentUser.id}`, JSON.stringify(chats));
                 } else {
-                    console.log('⚠️ No chats from server, trying localStorage');
+                    console.log('⚠️ Web app - No chats from server, trying localStorage');
                     // Fallback to localStorage
                     const savedChats = localStorage.getItem(`chats_${currentUser.id}`);
                     if (savedChats) {
                         chats = JSON.parse(savedChats);
-                        console.log('ℹ️ Loaded chats from localStorage:', chats.length);
+                        console.log('ℹ️ Web app - Loaded chats from localStorage:', chats.length);
                         
                         // Try to sync to server
                         await syncChatsToServer();
+                    } else {
+                        console.log('ℹ️ Web app - No saved chats found, creating default chat');
+                        createDefaultChat();
                     }
                 }
             } catch (error) {
-                console.error('❌ Error loading chats from server:', error);
+                console.error('❌ Web app - Error loading chats from server:', error);
                 // Fallback to localStorage
                 const savedChats = localStorage.getItem(`chats_${currentUser.id}`);
                 if (savedChats) {
                     chats = JSON.parse(savedChats);
-                    console.log('ℹ️ Loaded chats from localStorage fallback:', chats.length);
+                    console.log('ℹ️ Web app - Loaded chats from localStorage fallback:', chats.length);
+                } else {
+                    console.log('ℹ️ Web app - No saved chats found, creating default chat');
+                    createDefaultChat();
                 }
             }
             

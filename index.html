@@ -595,14 +595,14 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            // Simple user validation (in real app, this would be server-side)
+            // Pre-configured users (matching mobile app exactly)
             const users = [
                 { id: 'hope_gilbert', name: 'Hope Gilbert', email: 'hg@mawneypartners.com', password: 'Hunter1972' },
-                { id: 'josh_trister', name: 'Joshua Trister', email: 'jt@mawneypartners.com', password: 'Josh123' },
-                { id: 'rachel_trister', name: 'Rachel Trister', email: 'rt@mawneypartners.com', password: 'Rachel123' },
-                { id: 'jack_dalby', name: 'Jack Dalby', email: 'jd@mawneypartners.com', password: 'Jack123' },
-                { id: 'harry_edleman', name: 'Harry Edleman', email: 'he@mawneypartners.com', password: 'Harry123' },
-                { id: 'tyler_johnson', name: 'Tyler Johnson Thomas', email: 'tt@mawneypartners.com', password: 'Tyler123' }
+                { id: 'joshua_trister', name: 'Joshua Trister', email: 'jt@mawneypartners.com', password: 'Denmead100' },
+                { id: 'rachel_trister', name: 'Rachel Trister', email: 'finance@mawneypartners.com', password: 'Denmead100' },
+                { id: 'jack_dalby', name: 'Jack Dalby', email: 'jd@mawneypartners.com', password: 'Denmead100' },
+                { id: 'harry_edleman', name: 'Harry Edleman', email: 'he@mawneypartners.com', password: 'Denmead100' },
+                { id: 'tyler_johnson_thomas', name: 'Tyler Johnson Thomas', email: 'tjt@mawneypartners.com', password: 'Denmead100' }
             ];
             
             const user = users.find(u => u.email === email && u.password === password);
