@@ -301,6 +301,82 @@
         // API Configuration
         const API_BASE_URL = 'https://mawney-daily-news-api.onrender.com';
         
+        // Pre-configured users (matching mobile app)
+        const USERS = [
+            {
+                id: 'hope_gilbert',
+                name: 'Hope Gilbert',
+                email: 'hg@mawneypartners.com',
+                password: 'Hunter1972',
+                avatar: 'assets/profile-pictures/hope.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'joshua_trister',
+                name: 'Joshua Trister',
+                email: 'jt@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/josh.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'rachel_trister',
+                name: 'Rachel Trister',
+                email: 'finance@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/rachel.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'jack_dalby',
+                name: 'Jack Dalby',
+                email: 'jd@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/jack.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'harry_edleman',
+                name: 'Harry Edleman',
+                email: 'he@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/harry.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            },
+            {
+                id: 'tyler_johnson_thomas',
+                name: 'Tyler Johnson Thomas',
+                email: 'tjt@mawneypartners.com',
+                password: 'Denmead100',
+                avatar: 'assets/profile-pictures/tyler.jpg',
+                preferences: {
+                    notifications: true,
+                    darkMode: false,
+                    autoRefresh: true
+                }
+            }
+        ];
+        
         // User data
         let currentUser = null;
         let chatHistory = [];
@@ -314,12 +390,33 @@
         
         // Check if user is logged in
         function checkAuthStatus() {
-            const savedUser = localStorage.getItem('mawney_user');
-            if (!savedUser) {
-                window.location.href = 'index.html';
-                return;
+            const userData = localStorage.getItem('mawney_user');
+            if (userData) {
+                try {
+                    currentUser = JSON.parse(userData);
+                    loadChatHistory();
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    redirectToLogin();
+                }
+            } else {
+                redirectToLogin();
             }
-            currentUser = JSON.parse(savedUser);
+        }
+        
+        function redirectToLogin() {
+            window.location.href = 'index.html';
+        }
+        
+        function authenticateUser(email, password) {
+            const user = USERS.find(u => u.email === email && u.password === password);
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('mawney_user', JSON.stringify(user));
+                loadChatHistory();
+                return true;
+            }
+            return false;
         }
         
         // Go back to home
@@ -394,8 +491,12 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: message,
-                        user_id: currentUser.id
+                        query: message,
+                        chat_id: `web_${currentUser.id}`,
+                        context: {
+                            user_id: currentUser.id,
+                            platform: 'web'
+                        }
                     })
                 });
                 
