@@ -452,10 +452,10 @@
         async function loadChats() {
             try {
                 console.log('🔄 Web app - Loading chats for user:', currentUser.id);
-                console.log('🌐 API URL:', `${API_BASE_URL}/api/chats?user_id=${currentUser.id}`);
+                console.log('🌐 API URL:', `${API_BASE_URL}/api/user-chats?email=${currentUser.email}`);
                 
-                // First try to load from server
-                const response = await fetch(`${API_BASE_URL}/api/chats?user_id=${currentUser.id}`);
+                // First try to load from server (using same endpoint as mobile app)
+                const response = await fetch(`${API_BASE_URL}/api/user-chats?email=${currentUser.email}`);
                 console.log('📡 Server response status:', response.status);
                 
                 const data = await response.json();
@@ -498,10 +498,10 @@
             displayChats();
         }
         
-        // Sync chats to server
+        // Sync chats to server (using same endpoint as mobile app)
         async function syncChatsToServer() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/chats`, {
+                const response = await fetch(`${API_BASE_URL}/api/user-chats`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
